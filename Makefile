@@ -9,7 +9,7 @@ OBJS = $(addprefix $(OBJS_DIR)/, $(SRCS:.cpp=.o))
 
 # ===---===---===---===---===---===---===---===---===---===---===---===---
 
-CFLAGS = -Wall -Wextra -Werror
+CFLAGS = -Wall -Wextra -Werror 
 INCLUDES = -I Includes
 
 # ===---===---===---===---===---===---===---===---===---===---===---===---
@@ -37,4 +37,4 @@ re: fclean all
 run: all
 	./matrix
 
-.PHONY: all clean fclean re
+.PHONY: all clean fclean re run
