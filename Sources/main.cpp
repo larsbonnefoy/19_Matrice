@@ -15,5 +15,10 @@ int main(int ac, char **av) {
     vec2.toStdOut();
     std::cout << vec3.getSize() << std::endl;
     vec3.toStdOut();
+    std::cout << __builtin_cpu_supports("sse") << std::endl;
+    std::cout << __builtin_cpu_supports("sse2") <<std::endl;
+    std::cout << __builtin_cpu_supports("avx") << std::endl;
+    std::cout << __builtin_cpu_supports("avx2") <<std::endl;
+    std::cout << __builtin_cpu_supports("avx512f")<< std::endl;
     return 0;
 }

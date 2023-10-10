@@ -15,7 +15,7 @@ int main() {
     }
     printf("\n");
 
-    __m128 res = _mm_add_ss(vec, vec1);
+    __m128 res = _mm_add_ps(vec, vec1);
 
     for (int i  = 0; i < 4; i++) {
         printf("%f ", res[i]);
