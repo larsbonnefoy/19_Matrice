@@ -1,12 +1,6 @@
 #ifndef VECTOR_HPP
 #define VECTOR_HPP
 
-/*
- * For normal part should work only with float;
- * Bonus: with complex number;
- * -> use template array
-    //array directly in memory, or ptr to array?
- */
 #include <cstdint>
 #include <cstdlib>
 #include <cstring>
@@ -14,53 +8,63 @@
 #include <iostream>
 #include <ostream>
 
+/*
+ * For normal part should work only with float;
+ * Bonus: with complex number;
+ * -> use template array
+    //array directly in memory, or ptr to array?
+ * TODO: add operator overload
+ * Vector(void)                     -> returns 1 element array set to 0
+ * Vector(uint32_t count)           -> inits vector to 0;
+ * Vector(T *vec, uint32_t count)   -> copies vec into class
+ */
 template<typename T>
 class Vector {
     private:
-        uint32_t    size;
-        T           *vec;
+        uint32_t    _size;
+        T           *_vec;
 
     public:
         //Creates vector of size 1 with templated type set to 0
         Vector(void) {
-            this->vec = static_cast<T *>(std::calloc(1, sizeof(T)));
-            if (this->vec == nullptr) {
+            this->_vec = static_cast<T *>(std::calloc(1, sizeof(T)));
+            if (this->_vec == nullptr) {
                 throw std::exception();
             }
-            this->size = 1;
+            this->_size = 1;
         }
 
-        //Creates empty vector based on size
-        Vector(const uint32_t size) {
-            this->vec = static_cast<T *>(std::calloc(size, sizeof(T)));
-            if (this->vec == nullptr) {
+        //Creates empty _vector based on size
+        Vector(const uint32_t count) {
+            this->_vec = static_cast<T *>(std::calloc(count, sizeof(T)));
+            if (this->_vec == nullptr) {
                 throw std::exception();
             }
-            this->size = size;
+            this->_size = count;
             
         }
 
-        Vector(const T *vec, const uint32_t size) {
-            this->vec = static_cast<T *>(std::calloc(size, sizeof(T)));
-            if (this->vec == nullptr) {
+        Vector(const T *_vec, const uint32_t count) {
+            this->_vec = static_cast<T *>(std::calloc(count, sizeof(T)));
+            if (this->_vec == nullptr) {
                 throw std::exception();
             }
-            memcpy(this->vec, vec, sizeof(T) * size);
-            this->size = size;
+            memcpy(this->_vec, _vec, sizeof(T) * count);
+            this->_size = count;
         }
         
-        //Deletes memory allocated for vec;
+        //Deletes memory allocated for _vec;
         ~Vector() {
-            delete this->vec;
+            delete this->_vec;
         }
 
-        std::uint32_t   getSize() {
-            return this->size;
+        std::uint32_t   getSize() const {
+            return this->_size;
         }
 
-        void            toStdOut() {
-            for (uint32_t i = 0;  i < this->size;  i++) {
-                std::cout << vec[i] << " "; 
+        void            toStdOut() const {
+            for (uint32_t i = 0;  i < this->_size;  i++) {
+                std::cout << _vec[i] << " "; 
             }
             std::cout << std::endl;
         }
