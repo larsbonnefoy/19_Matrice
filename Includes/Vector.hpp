@@ -1,6 +1,7 @@
 #ifndef VECTOR_HPP
 #define VECTOR_HPP
 
+#include <initializer_list>
 #include <iostream>
 
 /*
@@ -30,10 +31,11 @@ class Vector {
             this->_data = new T[_size]();
         }
 
-        //Creates Vector based on ptr on elem passed as argument
-        Vector(const T *_data, const uint32_t count) : _size(count) {
-            this->_data = new T[_size];
-            memcpy(this->_data, _data, sizeof(T) * this->_size);
+        Vector(std::initializer_list<T> args): _size(args.size()), _data(new T[args.size()]){
+            uint32_t i = 0;
+            for (const T& elem : args) {
+                _data[i++] = elem;
+            }
         }
         
         // Copy constructor
@@ -45,7 +47,6 @@ class Vector {
         
         //Deletes memory allocated for _vec;
         ~Vector() {
-            std::cout << "Destructor of Vector Called" << std::endl;
             delete[] this->_data;
         }
 

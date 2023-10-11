@@ -2,6 +2,8 @@
 #define MATRIX_HPP
 
 #include "./Vector.hpp"
+#include <exception>
+#include <initializer_list>
 #include <sys/types.h>
 #include <vector>
 
@@ -31,13 +33,28 @@ class Matrix {
                 _matrix[i] = new Vector<T>(_cols); 
             }
         }
-        
+
+        Matrix(std::initializer_list<Vector<T> > vecList) : _rows(vecList.size()), _cols(0) {
+            _matrix = new Vector<T>*[_rows];
+            typename std::initializer_list<Vector<T> >::iterator vecIt;
+            uint32_t i = 0;
+            for ( vecIt=vecList.begin(); vecIt!=vecList.end(); ++vecIt) {
+                if (_cols == 0) {
+                    _cols = vecIt->getSize();
+                }
+                else if (vecIt->getSize() != _cols) {
+                    throw std::exception();
+                }
+                _matrix[i] = new Vector<T>(*vecIt);
+                i++;
+            }
+        }
+
         ~Matrix(void) {
-            std::cout << "Destructor of Matrix Called" << std::endl;
             for (uint32_t i = 0; i < _rows; ++i) {
                 delete _matrix[i];
             }
-            delete this->_matrix;
+            delete[] this->_matrix;
         }
 
         bool isSquare(void) const {

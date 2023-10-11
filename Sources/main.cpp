@@ -4,27 +4,12 @@
 int main(int ac, char **av) {
     (void) ac, (void)av;
 
-    float simpleVec[3] = {-1.2f, 2.2f ,3.3f};
-    Vector<float> vec2 = Vector<float>(simpleVec, 3);
-    std::cout << vec2.getSize() << std::endl;
-    vec2.toStdOut();
-    std::cout << std::endl;
+    Vector<float> vec1 = Vector<float>({-1.2, 2.2, 3.4});
+    Matrix<float> test = Matrix<float>({vec1, vec1, vec1});
+    Matrix<float> testbis = Matrix<float>({{1.0, 0, 0}, {0, 1, 0}, {0, 0, 1}});
 
-    Matrix<float> *matFloat = new Matrix<float>(6, 3);
-    matFloat->toStdOut();
-    std::cout << std::endl;
-    Matrix<float> *matSmall = new Matrix<float>();
-    matSmall->toStdOut();
-    std::cout << std::endl;
-    Matrix<int> *matInt = new Matrix<int>(3, 3);
-    matInt->toStdOut();
-
-    delete matFloat;
-    delete matInt;
-    delete matSmall;
-    
-    Matrix<int> matIntStack = Matrix<int>(3, 3);
-    matIntStack.toStdOut();
+    test.toStdOut();
+    testbis.toStdOut();
     /*
     std::cout << __builtin_cpu_supports("sse") << std::endl;
     std::cout << __builtin_cpu_supports("sse2") <<std::endl;
