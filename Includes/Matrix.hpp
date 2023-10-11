@@ -19,20 +19,16 @@ class Matrix {
     private:
         uint32_t    _rows; //_rows
         uint32_t    _cols; //col
-        std::vector<Vector<T>*> _matrix;
-        //Vector<T>   *_matrix;
+        Vector<T>   **_matrix;
 
     public:
-        Matrix(void) {
-            
+        Matrix(void): Matrix(1,1) {
         }
 
         Matrix(const uint32_t m, const uint32_t n) : _rows(m), _cols(n) {
-            //_matrix = new Vector<T>[_rows];
-            //_matrix = static_cast<Vector<T>* >(malloc(sizeof(Vector<T> *) * m));
+            _matrix = new Vector<T>*[_rows];
             for (uint32_t i = 0; i < _rows; i++) {
-                _matrix.push_back(new Vector<T>(_cols));
-                //_matrix[i] = Vector<T>(_cols); //obj is not persitent here;
+                _matrix[i] = new Vector<T>(_cols); 
             }
         }
         
@@ -41,6 +37,7 @@ class Matrix {
             for (uint32_t i = 0; i < _rows; ++i) {
                 delete _matrix[i];
             }
+            delete this->_matrix;
         }
 
         bool isSquare(void) const {

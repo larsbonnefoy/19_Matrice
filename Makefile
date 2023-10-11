@@ -9,7 +9,7 @@ OBJS = $(addprefix $(OBJS_DIR)/, $(SRCS:.cpp=.o))
 
 # ===---===---===---===---===---===---===---===---===---===---===---===---
 
-CFLAGS = -Wall -Wextra -Werror 
+CFLAGS = -Wall -Wextra -Werror -std=c++11
 INCLUDES = -I Includes
 
 # ===---===---===---===---===---===---===---===---===---===---===---===---
