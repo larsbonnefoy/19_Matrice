@@ -17,7 +17,6 @@ INCLUDES = -I Includes
 all: $(OBJS_DIR) $(NAME)
 
 $(OBJS_DIR):
-	@mkdir -p $(OBJS_DIR)
 	@mkdir -p $(OBJS_DIR)/Sources
 
 $(NAME): $(OBJS)
@@ -25,6 +24,11 @@ $(NAME): $(OBJS)
 
 $(OBJS_DIR)/%.o: %.cpp
 	c++ $(CFLAGS) $(INCLUDES) -c $< -o $@
+
+ex00: $(OBJS_DIR)
+	c++ $(CFLAGS) $(INCLUDES) -c Sources/ex00.cpp -o $(OBJS_DIR)/ex00.o
+	c++ $(CFLAGS) -o $(NAME) $(OBJS_DIR)/ex00.o
+	./matrix
 
 clean:
 	rm -rf $(OBJS_DIR)
@@ -37,4 +41,4 @@ re: fclean all
 run: all
 	./matrix
 
-.PHONY: all clean fclean re run
+.PHONY: all clean fclean re run ex00

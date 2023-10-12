@@ -66,27 +66,31 @@ class Vector {
 /*********************************Operations***********************************/
         
         //Adds vec._data to this._data
-        void add(const Vector<T> &vec) {
+        Vector<T>& add(const Vector<T> &vec) {
             for (uint32_t i = 0; i < this->_size; i++) {
                 _data[i] += vec.getData()[i]; 
             }
+            return (*this);
         }
 
         //Subtract vec._data to this._data
-        void sub(const Vector<T> &vec) {
+        Vector<T>& sub(const Vector<T> &vec) {
             for (uint32_t i = 0; i < this->_size; i++) {
                 _data[i] -= vec.getData()[i]; 
             }
+            return (*this);
         }
 
         //Scales all the values of a vector by factor a
-        void scale(const T &a) {
+        Vector<T>& scale(const T &a) {
             for (uint32_t i = 0; i < this->_size; i++) {
                 _data[i] *= a; 
             }
+            return (*this);
         }
 
 /****************************Operator Overload*********************************/
+
         void            toStdOut() const {
             for (uint32_t i = 0;  i < this->_size;  i++) {
                 std::cout << _data[i]; 

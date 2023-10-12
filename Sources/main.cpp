@@ -10,10 +10,18 @@ int main(int ac, char **av) {
     Vector<float> bigVec = Vector<float>({+2.0, +1.0, +0, -1});
     Matrix<float> test = Matrix<float>({vec1, vec1, vec1});
     Matrix<float> testbis = Matrix<float>({{1.0, 0, 0}, {0, 1, 0}, {0, 0, 1}});
+    Matrix<float> oneMatrix = Matrix<float>({{1.0, 1, 1}, {1, 1, 1}, {1, 1, 1}});
     std::cout << "vec1 " << vec1 << std::endl;
     std::cout << "vec1 * 2 " << vec1  * 2 << std::endl;
     std::cout << "vec2 + smallVec " << vec2 + smallVec << std::endl;
     std::cout << "vec2 + bigVec " << vec2 + bigVec << std::endl;
+    std::cout << "matrix test " << std::endl << test << std::endl;
+    std::cout << "matrix testbis " << std::endl << testbis << std::endl;
+    test.add(testbis);
+    std::cout << "added Matrix" << std::endl << test << std::endl;
+    std::cout << "testbis " << std::endl << testbis << std::endl;
+    test.scale(2);
+    std::cout << "scaled matrix" << std::endl << test << std::endl;
 
     //test.toStdOut();
     //testbis.toStdOut();
