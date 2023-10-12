@@ -21,6 +21,9 @@ class Vector {
         T           *_data;
 
     public:
+        
+/********************************Constructors**********************************/
+
         //Creates vector of size 1 with templated type set to 0
         Vector(void) : _size(1){
             this->_data = new T[_size]();
@@ -50,10 +53,40 @@ class Vector {
             delete[] this->_data;
         }
 
+/****************************Getters*******************************************/
+
         std::uint32_t   getSize() const {
             return this->_size;
         }
 
+        T*              getData() const {
+            return this->_data;
+        }
+        
+/*********************************Operations***********************************/
+        
+        //Adds vec._data to this._data
+        void add(const Vector<T> &vec) {
+            for (uint32_t i = 0; i < this->_size; i++) {
+                _data[i] += vec.getData()[i]; 
+            }
+        }
+
+        //Subtract vec._data to this._data
+        void sub(const Vector<T> &vec) {
+            for (uint32_t i = 0; i < this->_size; i++) {
+                _data[i] -= vec.getData()[i]; 
+            }
+        }
+
+        //Scales all the values of a vector by factor a
+        void scale(const T &a) {
+            for (uint32_t i = 0; i < this->_size; i++) {
+                _data[i] *= a; 
+            }
+        }
+
+/****************************Operator Overload*********************************/
         void            toStdOut() const {
             for (uint32_t i = 0;  i < this->_size;  i++) {
                 std::cout << _data[i]; 
@@ -62,8 +95,31 @@ class Vector {
                 }
             }
         }
+
+        //add second vector into first one 
+        Vector<T>& operator+(const Vector<T> &vec) {
+            this->add(vec);
+            return (*this);
+        }
+
+        //Subtract second vector into first one 
+        Vector<T>& operator-(const Vector<T> &vec) {
+            this->sub(vec);
+            return (*this);
+        }
+
+        //Scales Vector by value of T
+        Vector<T>& operator*(const T &a) {
+            this->scale(a);
+            return (*this);
+        }
+        
+        friend std::ostream& operator<<(std::ostream& os, const Vector<T> &vec) {
+            vec.toStdOut();
+            return os;
+        }
+
         //TODO: function to reshape vector into matrix
-        //TODO: Operator overload
 };
 
 #endif // !VECTOR_HPP
