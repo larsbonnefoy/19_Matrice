@@ -1,8 +1,11 @@
 #ifndef VECTOR_HPP
 #define VECTOR_HPP
 
+#include <cmath>
+#include <cstring>
 #include <initializer_list>
 #include <iostream>
+#include <ostream>
 
 /*
  * For normal part should work only with float;
@@ -34,10 +37,11 @@ class Vector {
             this->_data = new T[_size]();
         }
 
+        
         Vector(std::initializer_list<T> args): _size(args.size()), _data(new T[args.size()]){
             uint32_t i = 0;
             for (const T& elem : args) {
-                _data[i++] = elem;
+                _data[i++] = elem;          //In order to make a vector of vectors, need to make a deep copy of elem here
             }
         }
         
@@ -88,7 +92,7 @@ class Vector {
             }
             return (*this);
         }
-
+        
 /****************************Operator Overload*********************************/
 
         void            toStdOut() const {
@@ -118,12 +122,52 @@ class Vector {
             return (*this);
         }
         
+
+        //au lieu de return tout le vector, return le 1er element du vector
+        //TODO: fix
+        /*
+        T& operator[](uint32_t index) {
+            std::cout << "sizeof " << sizeof(T) << std::endl;
+            return _data[index].getData();
+        }
+        */
+
+        Vector<T>& operator=(const Vector<T> &other) {
+            for (uint32_t i = 0; i < other.getSize(); i++) {
+                _data[i] = other._data[i]; 
+            }
+            return *this;
+        }
+
         friend std::ostream& operator<<(std::ostream& os, const Vector<T> &vec) {
             vec.toStdOut();
             return os;
         }
 
         //TODO: function to reshape vector into matrix
+        //= operator overload
 };
 
+//TODO:
+//Can use fma only when T = float or int 
+//Otherwise have to use multiplication/addition of class T
+//Has to be as much vectors as coefs
+//O(n) time complexity: i (=coefs) * j(=nb of elemets per vector)
+template<typename T>
+Vector<T>& linear_combination(std::initializer_list<Vector<T> > vec, std::initializer_list<T> coefs) {
+    Vector<T> *resultVector = new Vector<T>(vec.begin()[0].getSize());
+
+    T* resVectorData = resultVector->getData();
+    uint32_t i = 0; 
+    for (const T& coef : coefs) {
+        const Vector<T> &currVec = vec.begin()[i];
+        const T* data = currVec.getData();
+
+        for(uint32_t j = 0; j < currVec.getSize(); j++) {
+            resVectorData[j] = std::fma(coef, data[j], resVectorData[j]);
+        }
+        i++;
+    }
+    return *resultVector;
+}
 #endif // !VECTOR_HPP

@@ -9,7 +9,7 @@ OBJS = $(addprefix $(OBJS_DIR)/, $(SRCS:.cpp=.o))
 
 # ===---===---===---===---===---===---===---===---===---===---===---===---
 
-CFLAGS = -Wall -Wextra -Werror -std=c++11
+CFLAGS = -Wall -Wextra -Werror -std=c++11 -g
 INCLUDES = -I Includes
 
 # ===---===---===---===---===---===---===---===---===---===---===---===---
@@ -28,6 +28,11 @@ $(OBJS_DIR)/%.o: %.cpp
 ex00: $(OBJS_DIR)
 	c++ $(CFLAGS) $(INCLUDES) -c Sources/ex00.cpp -o $(OBJS_DIR)/ex00.o
 	c++ $(CFLAGS) -o $(NAME) $(OBJS_DIR)/ex00.o
+	./matrix
+
+ex01: $(OBJS_DIR)
+	c++ $(CFLAGS) $(INCLUDES) -c Sources/ex01.cpp -o $(OBJS_DIR)/ex01.o
+	c++ $(CFLAGS) -o $(NAME) $(OBJS_DIR)/ex01.o
 	./matrix
 
 clean:
