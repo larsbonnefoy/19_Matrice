@@ -125,12 +125,9 @@ class Vector {
 
         //au lieu de return tout le vector, return le 1er element du vector
         //TODO: fix
-        /*
         T& operator[](uint32_t index) {
-            std::cout << "sizeof " << sizeof(T) << std::endl;
-            return _data[index].getData();
+            return _data[index];
         }
-        */
 
         Vector<T>& operator=(const Vector<T> &other) {
             for (uint32_t i = 0; i < other.getSize(); i++) {
@@ -171,6 +168,33 @@ Vector<T>& linear_combination(std::initializer_list<Vector<T> > vec, std::initia
     }
     return *resultVector;
 }
+
+template<typename T>
+T lerp(T p1, T p2, float t) {
+    return (std::fma(t, (p2 - p1), p1));  //p1 + t * (p2 - p1);
+}
+
+//Computes linear interpolation between v1 and v2, t incl [0,1]
+template<typename T>
+Vector<T>& lerp(Vector<T> v1, Vector<T>v2, float t) {
+    (void) v1;
+    (void) v2;
+    (void) t;
+    uint32_t size = v1.getSize();
+    Vector<T> *resultVector = new Vector<T>(size);
+    T *resultVectorData = resultVector->getData();
+
+    std::cout << std::endl;
+    for (uint32_t i = 0; i < size; i++) {
+        resultVectorData[i] = lerp(v1[i], v2[i], t);
+    }
+
+    return *resultVector;
+}
+
+//Generic lerp function, computes linear interpolation between two points
+//fma = x * y + z
+//t not incl [0;1] => get any point on the line drawn between p1 and p2
 
 Vector<float>& linear_combination_fma(std::initializer_list<Vector<float> > vec, std::initializer_list<float> coefs);
 #endif // !VECTOR_HPP

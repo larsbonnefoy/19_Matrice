@@ -4,7 +4,7 @@ SRC_DIR = Src
 
 SRC = Vector.cpp
 
-OBJS = $(addprefix $(OBJS_DIR)/, $(SRCS:.cpp=.o))
+OBJS = $(addprefix $(OBJS_DIR)/, $(SRC:.cpp=.o))
 
 # ===---===---===---===---===---===---===---===---===---===---===---===---
 
@@ -33,6 +33,11 @@ ex01: $(OBJS_DIR) $(OBJS)
 	c++ $(CFLAGS) -o $(NAME) $(OBJS) $(OBJS_DIR)/ex01.o
 	./matrix
 
+ex02: $(OBJS_DIR) $(OBJS)
+	c++ $(CFLAGS) $(INCLUDES) -c $(SRC_DIR)/ex02.cpp -o $(OBJS_DIR)/ex02.o
+	c++ $(CFLAGS) -o $(NAME) $(OBJS) $(OBJS_DIR)/ex02.o
+	./matrix
+
 clean:
 	rm -rf $(OBJS_DIR)
 
@@ -44,4 +49,4 @@ re: fclean all
 run: all
 	./matrix
 
-.PHONY: all clean fclean re run ex00
+.PHONY: all clean fclean re run ex00 ex01 ex02
