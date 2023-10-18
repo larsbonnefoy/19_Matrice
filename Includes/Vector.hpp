@@ -153,6 +153,7 @@ class Vector {
 //Otherwise have to use multiplication/addition of class T
 //Has to be as much vectors as coefs
 //O(n) time complexity: i (=coefs) * j(=nb of elemets per vector)
+//extern __m128d _mm_fmadd_pd(__m128d a, __m128d b, __m128d c);
 template<typename T>
 Vector<T>& linear_combination(std::initializer_list<Vector<T> > vec, std::initializer_list<T> coefs) {
     Vector<T> *resultVector = new Vector<T>(vec.begin()[0].getSize());
@@ -170,4 +171,6 @@ Vector<T>& linear_combination(std::initializer_list<Vector<T> > vec, std::initia
     }
     return *resultVector;
 }
+
+Vector<float>& linear_combination_fma(std::initializer_list<Vector<float> > vec, std::initializer_list<float> coefs);
 #endif // !VECTOR_HPP

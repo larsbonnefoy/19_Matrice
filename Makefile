@@ -1,9 +1,8 @@
 NAME = matrix
-OBJS_DIR = Objs
+OBJS_DIR = Obj
+SRC_DIR = Src
 
-FILES = main.cpp 
-
-SRCS = $(addprefix Sources/, $(FILES))
+SRC = Vector.cpp
 
 OBJS = $(addprefix $(OBJS_DIR)/, $(SRCS:.cpp=.o))
 
@@ -14,25 +13,24 @@ INCLUDES = -I Includes
 
 # ===---===---===---===---===---===---===---===---===---===---===---===---
 
-all: $(OBJS_DIR) $(NAME)
+all: $(OBJS_DIR) $(OBJS)
+	c++ $(CFLAGS) $(INCLUDES) -c $(SRC_DIR)/main.cpp -o $(OBJS_DIR)/main.o
+	c++ $(CFLAGS) -o $(NAME) $(OBJS) $(OBJS_DIR)/main.o
 
 $(OBJS_DIR):
-	@mkdir -p $(OBJS_DIR)/Sources
+	@mkdir -p $(OBJS_DIR)
 
-$(NAME): $(OBJS)
-	c++ $(CFLAGS) -o $(NAME) $(OBJS)
-
-$(OBJS_DIR)/%.o: %.cpp
+$(OBJS_DIR)/%.o: $(SRC_DIR)/%.cpp
 	c++ $(CFLAGS) $(INCLUDES) -c $< -o $@
 
-ex00: $(OBJS_DIR)
-	c++ $(CFLAGS) $(INCLUDES) -c Sources/ex00.cpp -o $(OBJS_DIR)/ex00.o
-	c++ $(CFLAGS) -o $(NAME) $(OBJS_DIR)/ex00.o
+ex00: $(OBJS_DIR) $(OBJS)
+	c++ $(CFLAGS) $(INCLUDES) -c $(SRC_DIR)/ex00.cpp -o $(OBJS_DIR)/ex00.o
+	c++ $(CFLAGS) -o $(NAME) $(OBJS) $(OBJS_DIR)/ex00.o
 	./matrix
 
-ex01: $(OBJS_DIR)
-	c++ $(CFLAGS) $(INCLUDES) -c Sources/ex01.cpp -o $(OBJS_DIR)/ex01.o
-	c++ $(CFLAGS) -o $(NAME) $(OBJS_DIR)/ex01.o
+ex01: $(OBJS_DIR) $(OBJS)
+	c++ $(CFLAGS) $(INCLUDES) -c $(SRC_DIR)/ex01.cpp -o $(OBJS_DIR)/ex01.o
+	c++ $(CFLAGS) -o $(NAME) $(OBJS) $(OBJS_DIR)/ex01.o
 	./matrix
 
 clean:
