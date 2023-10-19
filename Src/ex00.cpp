@@ -67,5 +67,8 @@ int main(int ac, char **av) {
     std::cout << "=";
     std::cout << id * 2 << std::endl;
     std::cout << std::endl;
+    Matrix<float> *id_ptr = new Matrix<float>({vX, vY, vZ});
+    std::cout << *id_ptr << std::endl;
+    delete id_ptr;
     return 0;
 }

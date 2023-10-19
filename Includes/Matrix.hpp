@@ -144,4 +144,13 @@ class Matrix {
         }
 };
 
+template<typename T>
+Matrix<T>& lerp(Matrix<T> &m1, Matrix<T>& m2, float t) {
+    (void) t;
+    (void) m2;
+    std::cout << m1.getColNb() << " " << m1.getRowsNb() << std::endl;
+    Matrix<T> *resultMatrix = new Matrix<T>(m1.getColNb(), m1.getRowsNb());
+
+    return *resultMatrix;
+}
 #endif
