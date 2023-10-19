@@ -73,11 +73,11 @@ class Matrix {
         }
 
         //Returns in matrix by id
-         Vector<T>* getRow(uint32_t rowId) const {
+         Vector<T>& getRow(uint32_t rowId) const {
              if (rowId > this->_rows) {
                 throw std::exception();
              }
-             return _matrix[rowId];
+             return *_matrix[rowId];
         }
 
 /*********************************Operations***********************************/
@@ -85,7 +85,7 @@ class Matrix {
         //Row by Row addition of matrix into "this" object
         Matrix<T>& add(const Matrix<T>& matrix) {
             for (uint32_t i = 0;  i < this->_rows;  i++) {
-                _matrix[i]->add(*(matrix.getRow(i)));
+                _matrix[i]->add(matrix.getRow(i));
             }
             return (*this);
         }
@@ -93,7 +93,7 @@ class Matrix {
         //Row by Row substraction of matrix into "this" object
         Matrix<T>& sub(const Matrix<T>& matrix) {
             for (uint32_t i = 0;  i < this->_rows;  i++) {
-                _matrix[i]->sub(*(matrix.getRow(i)));
+                _matrix[i]->sub(matrix.getRow(i));
             }
             return (*this);
         }
@@ -138,6 +138,10 @@ class Matrix {
             return (*this);
         }
 
+        Vector<T>& operator[](uint32_t index) {
+            return this->getRow(index);
+        }
+
         friend std::ostream& operator<<(std::ostream& os, const Matrix<T> &matrix) {
             matrix.toStdOut();
             return os;
@@ -146,11 +150,10 @@ class Matrix {
 
 template<typename T>
 Matrix<T>& lerp(Matrix<T> &m1, Matrix<T>& m2, float t) {
-    (void) t;
-    (void) m2;
-    std::cout << m1.getColNb() << " " << m1.getRowsNb() << std::endl;
     Matrix<T> *resultMatrix = new Matrix<T>(m1.getColNb(), m1.getRowsNb());
-
+    for (uint32_t i = 0; i < m1.getColNb(); i++) {
+        (*resultMatrix)[i] = lerp(m1[i], m2[i], t);
+    }
     return *resultMatrix;
 }
 #endif
