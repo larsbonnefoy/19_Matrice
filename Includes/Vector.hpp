@@ -221,6 +221,12 @@ Vector<T>* lerp(Vector<T>& v1, Vector<T> &v2, float t) {
     return resultVector;
 }
 
+//Returns cos(alpha), alpha = angle between v1 and v2
+template<typename T>
+float angle_cos(Vector<T>& v1, Vector<T> &v2) {
+    return ( v1.dot(v2) / (v1.norm() * v2.norm()) );
+}
+
 //!!Function not usable atm
 Vector<float>& linear_combination_fma(std::initializer_list<Vector<float> > vec, std::initializer_list<float> coefs);
 #endif // !VECTOR_HPP
