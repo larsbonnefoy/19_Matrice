@@ -1,6 +1,7 @@
 #ifndef VECTOR_HPP
 #define VECTOR_HPP
 
+#include <algorithm>
 #include <cmath>
 #include <cstring>
 #include <initializer_list>
@@ -99,6 +100,33 @@ class Vector {
                 res = std::fma(_data[i], vec.getData()[i], res);
             }
             return (res);
+        }
+
+        T abs(const T val) {
+            if (val < 0) {
+                return (-val);
+            }
+            return (val);
+        }
+
+        T norm_1() {
+            T res = 0;
+            for (uint32_t i = 0; i < this->getSize(); i++) {
+                res += abs(_data[i]);
+            }
+            return res;
+        }
+
+        T norm() {
+            return std::sqrt(this->dot(*this));
+        }
+
+        T norm_inf() {
+            T res = abs(_data[0]);
+            for (uint32_t i = 1; i < this->getSize(); i++) {
+                res = std::max(res, abs(_data[i]));
+            }
+            return res;
         }
 /****************************Operator Overload*********************************/
 
