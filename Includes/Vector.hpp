@@ -93,6 +93,13 @@ class Vector {
             return (*this);
         }
         
+        T dot(const Vector<T> &vec) {
+            T res = 0;
+            for (uint32_t i = 0; i < this->getSize(); i++) {
+                res = std::fma(_data[i], vec.getData()[i], res);
+            }
+            return (res);
+        }
 /****************************Operator Overload*********************************/
 
         void            toStdOut() const {
@@ -122,9 +129,6 @@ class Vector {
             return (*this);
         }
         
-
-        //au lieu de return tout le vector, return le 1er element du vector
-        //TODO: fix
         T& operator[](uint32_t index) {
             return _data[index];
         }
