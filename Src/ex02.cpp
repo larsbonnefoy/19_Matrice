@@ -15,15 +15,19 @@ int main (void)
 
     std::cout << v1 << std::endl;
     std::cout << v2 << std::endl;
-    std::cout << "(v1;v2;0.3) = " << lerp(v1, v2, 0.3) << std::endl;
+    Vector<float> *res = lerp(v1, v2, 0.3);
+    std::cout << "(v1;v2;0.3) = " << *res << std::endl;
+    delete res;
 
-    //Vector<float> v3 = Vector<float>({2, 1});
-    //Vector<float> v4 = Vector<float>({3, 4});
-    ////TODO: if not newed here, use after free segfault, if new, the segfault when delete
-    //Matrix<float> m1 = Matrix<float>({v3, v4});
-    //Vector<float> v5 = Vector<float>({20, 10});
-    //Vector<float> v6 = Vector<float>({30, 40});
-    //Matrix<float> m2 = Matrix<float>({v5, v6});
-    //std::cout << "(m1;m2;0.5) = " << lerp(m1, m2, 0.5)<< std::endl;
+    Vector<float> v3 = Vector<float>({2, 1});
+    Vector<float> v4 = Vector<float>({3, 4});
+    Matrix<float> m1 = Matrix<float>({v3, v4});
+    Vector<float> v5 = Vector<float>({20, 10});
+    Vector<float> v6 = Vector<float>({30, 40});
+    Matrix<float> m2 = Matrix<float>({v5, v6});
+    Matrix<float> *m3 = lerp(m1, m2, 0.5);
+
+    std::cout << "(m1;m2;0.5) = " << *m3 << std::endl;
+    delete m3;
     return 0;
 }

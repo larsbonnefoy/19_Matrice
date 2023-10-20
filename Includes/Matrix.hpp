@@ -35,6 +35,11 @@ class Matrix {
             }
         }
 
+        //init only rows of matrix
+        Matrix(const uint32_t m) : _rows(m) {
+            _matrix = new Vector<T>*[_rows];
+        }
+
         Matrix(std::initializer_list<Vector<T> > vecList) : _rows(vecList.size()), _cols(0) {
             _matrix = new Vector<T>*[_rows];
             typename std::initializer_list<Vector<T> >::iterator vecIt;
@@ -48,6 +53,13 @@ class Matrix {
                 }
                 _matrix[i] = new Vector<T>(*vecIt);
                 i++;
+            }
+        }
+
+        Matrix(const Matrix& other) : _rows(other.getRowsNb()), _cols(other.getColNb()) {
+            _matrix = new Vector<T>*[_rows];
+            for (uint32_t i = 0; i < _rows; ++i) {
+                _matrix[i] = new Vector<T>(*other._matrix[i]);
             }
         }
 
@@ -73,12 +85,24 @@ class Matrix {
         }
 
         //Returns in matrix by id
-         Vector<T>& getRow(uint32_t rowId) const {
-             if (rowId > this->_rows) {
+        Vector<T>& getRow(uint32_t rowId) const {
+            if (rowId > this->_rows) {
                 throw std::exception();
-             }
-             return *_matrix[rowId];
+            }
+            return *_matrix[rowId];
         }
+
+        Vector<T>* getRowAddr(uint32_t rowId) {
+            if (rowId > this->_rows) {
+                throw std::exception();
+            }
+            return _matrix[rowId];
+        }
+
+        Vector<T>** getData() {
+            return _matrix;
+        }
+
 
 /*********************************Operations***********************************/
 
@@ -142,18 +166,30 @@ class Matrix {
             return this->getRow(index);
         }
 
+        Matrix<T>& operator=(const Matrix<T> &other) {
+            for (uint32_t i = 0; i < other.getRowsNb(); i++) {
+                _matrix[i] = other._matrix[i]; 
+            }
+            return *this;
+        }
+
         friend std::ostream& operator<<(std::ostream& os, const Matrix<T> &matrix) {
             matrix.toStdOut();
             return os;
         }
 };
 
+/*
+ * Returns new *Matrix 
+ */
 template<typename T>
-Matrix<T>& lerp(Matrix<T> &m1, Matrix<T>& m2, float t) {
-    Matrix<T> *resultMatrix = new Matrix<T>(m1.getColNb(), m1.getRowsNb());
+Matrix<T>* lerp(Matrix<T> &m1, Matrix<T> &m2, float t) {
+    Matrix<T> *resultMatrix = new Matrix<T>(m1.getRowsNb());
+    Vector<T>** matrix = resultMatrix->getData();
+
     for (uint32_t i = 0; i < m1.getColNb(); i++) {
-        (*resultMatrix)[i] = lerp(m1[i], m2[i], t);
+        matrix[i] = lerp(m1[i], m2[i], t);
     }
-    return *resultMatrix;
+    return resultMatrix;
 }
 #endif

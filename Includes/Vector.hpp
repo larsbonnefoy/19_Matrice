@@ -178,17 +178,15 @@ T lerp(T p1, T p2, float t) {
 
 //Computes linear interpolation between v1 and v2, t incl [0,1]
 template<typename T>
-Vector<T>& lerp(Vector<T>& v1, Vector<T> &v2, float t) {
+Vector<T>* lerp(Vector<T>& v1, Vector<T> &v2, float t) {
     uint32_t size = v1.getSize();
     Vector<T> *resultVector = new Vector<T>(size);
     T *resultVectorData = resultVector->getData();
 
-    std::cout << std::endl;
     for (uint32_t i = 0; i < size; i++) {
         resultVectorData[i] = lerp(v1[i], v2[i], t);
     }
-
-    return *resultVector;
+    return resultVector;
 }
 
 //!!Function not usable atm
