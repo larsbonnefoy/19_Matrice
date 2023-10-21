@@ -11,5 +11,7 @@ int main (void)
     Vector<float> v3 = Vector<float>({-1, 2});
     std::cout << v3.norm_1() << " " << v3.norm() << " " << v3.norm_inf() << std::endl;
 
+    Vector<float> v4= Vector<float>({0.001, 0.001, 0.001});
+    std::cout << v4.norm_1() << " " << v4.norm() << " " << v4.norm_inf() << std::endl;
     return 0;
 }

@@ -227,6 +227,40 @@ float angle_cos(Vector<T>& v1, Vector<T> &v2) {
     return ( v1.dot(v2) / (v1.norm() * v2.norm()) );
 }
 
+/*
+ *  c = a x b
+ *  c = |a||b| sin(theta) n
+ *  theta = angle between both vectors
+ *  n = unit vector perpendicular to the plan of a b
+ *  
+ *  i = [1 0 0]
+ *  j = [0 1 0]
+ *  k = [0 0 1]
+ *
+ *          | i  j  k  |
+ *  a x b = | a1 a2 a3 |
+ *          | b1 b2 b3 |
+ *
+ *  a x b = (a2b3 - a3b2)i - (a1b3 - a3b1)j + (a1b2 - a2b1)k
+ *  
+ *  | s1 |   | a2b3 - a3b2 |
+ *  | s2 | = | a3b1 - a1b3 |
+ *  | s3 |   | a1b2 - a2b1 |
+ *
+ * Returns new Vector
+ */
+template<typename T>
+Vector<T>* cross_product(Vector<T>& v1, Vector<T> &v2) {
+    T* a = v1.getData();
+    T* b = v2.getData();
+
+    T s1 =  a[1] * b[2] - a[2] * b[1];
+    T s2 =  a[2] * b[0] - a[0] * b[2];
+    T s3 =  a[0] * b[1] - a[1] * b[0];
+    
+    return (new Vector<T>({s1, s2, s3}));
+}
+
 //!!Function not usable atm
 Vector<float>& linear_combination_fma(std::initializer_list<Vector<float> > vec, std::initializer_list<float> coefs);
 #endif // !VECTOR_HPP

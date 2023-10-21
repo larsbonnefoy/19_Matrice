@@ -53,6 +53,11 @@ ex05: $(OBJS_DIR) $(OBJS)
 	c++ $(CFLAGS) -o $(NAME) $(OBJS) $(OBJS_DIR)/ex05.o
 	./matrix
 
+ex06: $(OBJS_DIR) $(OBJS)
+	c++ $(CFLAGS) $(INCLUDES) -c $(SRC_DIR)/ex06.cpp -o $(OBJS_DIR)/ex06.o
+	c++ $(CFLAGS) -o $(NAME) $(OBJS) $(OBJS_DIR)/ex06.o
+	./matrix
+
 clean:
 	rm -rf $(OBJS_DIR)
 
