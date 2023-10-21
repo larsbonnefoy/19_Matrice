@@ -22,7 +22,7 @@ int main (void)
     Vector<float> *crossV7V8 = cross_product(v7, v8);
     std::cout << "v7 = " << v7 << " v8 = " << v8 << " cross = "<< *crossV7V8 << " norm = "<< crossV7V8->norm() << std::endl;
 
-    Vector<float> v9 = Vector<float>({4, 2, 3});
+    Vector<float> v9 = Vector<float>({4, 2, });
     Vector<float> v10 = Vector<float>({-4, -2, -3});
     Vector<float> *crossV9V10 = cross_product(v9, v10);
     std::cout << "v9 = " << v9 << " v10 = " << v10 << " cross = "<< *crossV9V10 << " norm = "<< crossV9V10->norm() << std::endl;

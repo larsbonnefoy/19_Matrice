@@ -92,6 +92,22 @@ class Matrix {
             return *_matrix[rowId];
         }
 
+        /*
+         * Returns a new Obj Vector representing column of matrix
+         */
+        Vector<T>* getCol(uint32_t colId) const {
+            if (_cols - 1 < colId) {
+                throw std::exception();
+            }
+            Vector<T> *resVec = new Vector<T>(_rows);
+            T* vecData = resVec->getData();
+
+            for (uint32_t i = 0; i < _rows; i++) {
+                vecData[i] = _matrix[i]->getData()[colId];
+            }
+            return resVec;
+        }
+
         Vector<T>* getRowAddr(uint32_t rowId) {
             if (rowId > this->_rows) {
                 throw std::exception();
@@ -128,8 +144,87 @@ class Matrix {
             }
             return (*this);
         }
+        
+        /*
+         * Dot production of each row with vector
+         */
+        Vector<T>* mul_vec(const Vector<T>& vec) {
+            Vector<T> *res = new Vector<T>(vec.getSize());
+            T* data = res->getData();
 
+            for (uint32_t i = 0; i < _rows; i++) {
+                data[i] = _matrix[i]->dot(vec);
+            }
+            return res;
+        }
 
+        /*
+         * (m x n) * (n x p) = (m x p)
+         *   this  *   m     = this._rows * m.getColNb
+         *   n^3 complexity
+         *   Need to get col of matrix m
+         */
+        Matrix<T>* mul_mat(const Matrix<T>& m) {
+            if (_cols != m._rows) {
+                throw std::exception();
+            }
+
+            Matrix<T> *res = new Matrix<T>(_rows);
+            Vector<T>** resMatrix = res->getData();
+
+            Matrix<T> *mT = m.transpose();
+            Vector<T> ** mTData = mT->getData();
+
+            for (uint32_t i = 0; i < _rows; i++) {
+                Vector<T> *newRow = new Vector<T>(m.getColNb());
+                T* dataRow = newRow->getData();
+
+                for (uint32_t j = 0; j < mT->getRowsNb(); j++) {
+                    dataRow[j] = _matrix[i]->dot(*mTData[j]);
+                }
+                resMatrix[i] = newRow;
+            }
+
+            delete mT;
+            return res;
+        }
+
+        /*
+         * Multiply in place matrice this with m
+         * Need a copy of current row of this matrix
+         * Only possible if both matrices are square
+         * Returns ptr to this object
+         */
+        Matrix<T>* mul_mat_ip(const Matrix<T>& m) {
+            if (_cols != m._rows) {
+                throw std::exception();
+            }
+
+            Matrix<T> *mT = m.transpose();
+            Vector<T> ** mTData = mT->getData();
+
+            for (uint32_t i = 0; i < _rows; i++) {
+                Vector<T> *cpyCurrentRow = new Vector<T>(*_matrix[i]);
+
+                for (uint32_t j = 0; j < mT->getRowsNb(); j++) {
+                    (*_matrix[i])[j] = cpyCurrentRow->dot(*mTData[j]);
+                }
+                delete cpyCurrentRow;
+            }
+
+            return this;
+        }
+
+        Matrix<T>* transpose() const {
+            Matrix<T> *res = new Matrix<T>(_cols);
+            Vector<T> **resMatrix = res->getData();
+
+            for (uint32_t i = 0; i < _cols; i++) {
+                resMatrix[i] = this->getCol(i);
+            }
+            return res;
+        }
+        
 /****************************Operator Overload*********************************/
 
         void            toStdOut() const {
