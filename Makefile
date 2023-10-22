@@ -64,6 +64,12 @@ ex07: $(OBJS_DIR) $(OBJS)
 	c++ $(CFLAGS) -o $(NAME) $(OBJS) $(OBJS_DIR)/ex07.o
 	./matrix
 
+
+ex08: $(OBJS_DIR) $(OBJS)
+	c++ $(CFLAGS) $(INCLUDES) -c $(SRC_DIR)/ex08.cpp -o $(OBJS_DIR)/ex08.o
+	c++ $(CFLAGS) -o $(NAME) $(OBJS) $(OBJS_DIR)/ex08.o
+	./matrix
+
 clean:
 	rm -rf $(OBJS_DIR)
 
@@ -75,4 +81,4 @@ re: fclean all
 run: all
 	./matrix
 
-.PHONY: all clean fclean re run ex00 ex01 ex02 ex03 ex04 ex05 ex06 ex07
+.PHONY: all clean fclean re run ex00 ex01 ex02 ex03 ex04 ex05 ex06 ex07 ex08

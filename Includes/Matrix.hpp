@@ -254,6 +254,21 @@ class Matrix {
             return this;
         }
 
+        /*
+         * Computes sum of diagonal elements
+         * Only defined for square matrices;
+         */
+        T trace() const {
+            if (!this->isSquare()) {
+                throw std::exception();
+            }
+            T trace = 0;
+            for (uint32_t i = 0; i < _rows; i++) {
+                trace += (*_matrix[i])[i]; 
+            }
+            return trace;
+        }
+
         Matrix<T>* transpose() const {
             Matrix<T> *res = new Matrix<T>(_cols);
             Vector<T> **resMatrix = res->getData();
