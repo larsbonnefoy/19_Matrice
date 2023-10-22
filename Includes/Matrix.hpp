@@ -115,7 +115,7 @@ class Matrix {
             return _matrix[rowId];
         }
 
-        Vector<T>** getData() {
+        Vector<T>** getData() const {
             return _matrix;
         }
 
@@ -159,12 +159,49 @@ class Matrix {
         }
 
         /*
+         * Input: matrices A and B
+            Let C be a new matrix of the appropriate size
+            For i from 1 to n:
+                For j from 1 to p:
+                    Let sum = 0
+                    For k from 1 to m:
+                        Set sum ← sum + Aik × Bkj
+                    Set Cij ← sum
+            Return C
+        */
+        Matrix<T>* mul_mat(const Matrix<T>& m) {
+
+            if (_cols != m._rows) {
+                throw std::exception();
+            }
+
+            Matrix<T> *res = new Matrix<T>(_rows);
+            Vector<T>** resMatrix = res->getData();
+
+            Vector<T>** mMatrixData = m.getData();
+
+            for(uint32_t i = 0; i < _rows; i++) {
+                Vector<T> *newRow = new Vector<T>(m.getColNb());
+                T* dataRow = newRow->getData();
+                for(uint32_t j = 0; j < m.getColNb(); j++) {
+                    T sum = 0;
+                    for (uint32_t k = 0; k < m.getRowsNb(); k++){
+                        sum = std::fma((*_matrix[i])[k], (*mMatrixData[k])[j], sum);
+                    }
+                    dataRow[j] = sum;
+                }
+                resMatrix[i] = newRow;
+            }
+            return res;
+        }
+
+        /*
          * (m x n) * (n x p) = (m x p)
          *   this  *   m     = this._rows * m.getColNb
          *   n^3 complexity
          *   Need to get col of matrix m
          */
-        Matrix<T>* mul_mat(const Matrix<T>& m) {
+        Matrix<T>* mul_mat_transpose(const Matrix<T>& m) {
             if (_cols != m._rows) {
                 throw std::exception();
             }
@@ -196,22 +233,24 @@ class Matrix {
          * Returns ptr to this object
          */
         Matrix<T>* mul_mat_ip(const Matrix<T>& m) {
-            if (_cols != m._rows) {
+            if (_cols != m._rows && !this->isSquare()) {
                 throw std::exception();
             }
 
-            Matrix<T> *mT = m.transpose();
-            Vector<T> ** mTData = mT->getData();
+            Vector<T>** mMatrixData = m.getData();
 
             for (uint32_t i = 0; i < _rows; i++) {
                 Vector<T> *cpyCurrentRow = new Vector<T>(*_matrix[i]);
-
-                for (uint32_t j = 0; j < mT->getRowsNb(); j++) {
-                    (*_matrix[i])[j] = cpyCurrentRow->dot(*mTData[j]);
+                T* cpyData = cpyCurrentRow->getData(); //already ith row
+                for (uint32_t j = 0; j < m.getColNb(); j++) {
+                    T sum = 0;
+                    for (uint32_t k = 0; k < m.getRowsNb(); k++){
+                        sum = std::fma(cpyData[k], (*mMatrixData[k])[j], sum);
+                    }
+                    (*_matrix[i])[j] = sum;
                 }
                 delete cpyCurrentRow;
             }
-
             return this;
         }
 
