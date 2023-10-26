@@ -1,7 +1,6 @@
 #ifndef VECTOR_HPP
 #define VECTOR_HPP
 
-#include <algorithm>
 #include <cmath>
 #include <cstring>
 #include <initializer_list>
@@ -23,6 +22,10 @@ class Vector {
     private:
         uint32_t    _size;
         T           *_data;
+
+/*******************************Private Helpers********************************/
+
+/******************************************************************************/
 
     public:
         
@@ -128,6 +131,27 @@ class Vector {
             }
             return res;
         }
+
+        /*
+         * How do make the difference between ptr data that has to be switched
+         * and raw data that has to be copied?
+         *
+         */
+        void swap_elements(uint32_t i, uint32_t j) {
+            T tmp = _data[i];
+            _data[i] = _data[j]; 
+            _data[j] = tmp;
+        }
+
+        //Should create variable list size set to 1; len = _size;
+        // /!\ Doesnt work !!
+        bool is_null() {
+            Vector<T> vec = Vector<T>({1});
+            if (!this->dot(vec)) {
+                return false;
+            }
+            return true;
+        }
 /****************************Operator Overload*********************************/
 
         void            toStdOut() const {
@@ -176,14 +200,10 @@ class Vector {
         //TODO: function to reshape vector into matrix
 };
 
-//TODO:
-//Can use fma only when T = float or int 
-//Otherwise have to use multiplication/addition of class T
 //Has to be as much vectors as coefs
 //O(n) time complexity: i (=coefs) * j(=nb of elemets per vector)
-//extern __m128d _mm_fmadd_pd(__m128d a, __m128d b, __m128d c);
 template<typename T>
-Vector<T>& linear_combination(std::initializer_list<Vector<T> > vec, std::initializer_list<T> coefs) {
+Vector<T>* linear_combination(std::initializer_list<Vector<T> > vec, std::initializer_list<T> coefs) {
     Vector<T> *resultVector = new Vector<T>(vec.begin()[0].getSize());
 
     T* resVectorData = resultVector->getData();
@@ -197,7 +217,7 @@ Vector<T>& linear_combination(std::initializer_list<Vector<T> > vec, std::initia
         }
         i++;
     }
-    return *resultVector;
+    return resultVector;
 }
 
 //Generic lerp function, computes linear interpolation between two points

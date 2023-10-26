@@ -7,7 +7,7 @@ int main (void)
     std::cout << v1.dot(v2) << std::endl;
     std::cout << v2.dot(v1) << std::endl;
 
-    Vector<float> v3 = Vector<float>({0, 0});
+    Vector<float> v3 = Vector<float>({0, 0}); //dot product with nul vector = 0
     Vector<float> v4 = Vector<float>({4, 2});
     std::cout << v3.dot(v4) << std::endl;
 

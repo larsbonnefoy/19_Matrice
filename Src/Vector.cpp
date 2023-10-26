@@ -6,7 +6,8 @@
 //extern __m128 _mm_fmadd_ps(__m128 a, __m128 b, __m128 c);
 //-> a x b + c
 //https://stackoverflow.com/questions/5273929/multiplying-vector-by-constant-using-sse/20458599#20458599
-Vector<float>& linear_combination_fma(std::initializer_list<Vector<float> > vec, std::initializer_list<float> coefs) {
+/*
+Vector<float>* linear_combination_fma(std::initializer_list<Vector<float> > vec, std::initializer_list<float> coefs) {
     uint32_t vecSize = vec.begin()[0].getSize();
     if (vecSize > 3 || coefs.size() > 3) {
         std::cout << "Used normal combi li" << std::endl;
@@ -14,7 +15,6 @@ Vector<float>& linear_combination_fma(std::initializer_list<Vector<float> > vec,
     }
     std::cerr << "FUNCTION DOES NOTHING ATM" << std::endl;
     Vector<float> *resultVector = new Vector<float>(vec.begin()[0].getSize());
-    /*
 
     float* resVectorData = resultVector->getData();
     uint32_t i = 0; 
@@ -23,7 +23,7 @@ Vector<float>& linear_combination_fma(std::initializer_list<Vector<float> > vec,
         //__mm_fmadd_ps(scalar, scalar, scalar);
         i++;
     }
-    */
 
-    return *resultVector;
+    return resultVector;
 }
+*/

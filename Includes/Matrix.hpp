@@ -4,9 +4,10 @@
 #include "./Vector.hpp"
 #include <exception>
 #include <initializer_list>
+#include <iostream>
+#include <iterator>
+#include <ostream>
 #include <sys/types.h>
-#include <vector>
-
 /*
  * Cannot be irregular Matrix!
  * 
@@ -109,7 +110,7 @@ class Matrix {
         }
 
         Vector<T>* getRowAddr(uint32_t rowId) {
-            if (rowId > this->_rows) {
+            if (rowId > _rows - 1) {
                 throw std::exception();
             }
             return _matrix[rowId];
@@ -269,6 +270,17 @@ class Matrix {
             return trace;
         }
 
+        T mult_diag() const {
+            if (!this->isSquare()) {
+                throw std::exception();
+            }
+            T val = 1;
+            for (uint32_t i = 0; i < _rows; i++) {
+                val *= (*_matrix[i])[i]; 
+            }
+            return val;
+        }
+
         Matrix<T>* transpose() const {
             Matrix<T> *res = new Matrix<T>(_cols);
             Vector<T> **resMatrix = res->getData();
@@ -277,6 +289,132 @@ class Matrix {
                 resMatrix[i] = this->getCol(i);
             }
             return res;
+        }
+       
+        /*
+         * swaps row i with row j
+         * Going to crash if out of bonds;
+         */
+        void swap_row(uint32_t i, uint32_t j) {
+            Vector<T>* tmp = getRowAddr(j);
+            _matrix[j] = getRowAddr(i);
+            _matrix[i] = tmp;
+        }
+
+
+        /*
+         * Computes reduced row echelon from of matrix
+         * Returns new Matrix obj
+         *
+         * There are three types of elementary row operations that do not change the solution set:
+         * Swapping two rows                           -> multiplies det by -1
+         * Multiplying a row by a nonzero number       -> multiplies det by same number
+         * Adding a multiple of one row to another row -> does not change det
+
+         * RREF
+         * 1: Determine the leftmost non-zero column.
+         * 2: Use elementary row operations to put a 1 in the topmost position of this column
+         * 3: Use elementary row operations to put zeros (strictly) below the pivot position.
+         * 4: If there are no more non-zero rows (strictly) below the pivot position, then go to Step 6
+         * 5: Apply Step 2-5 to the submatrix consisting of the rows that lie (strictly below) the pivot position
+         * 6: The resulting matrix is in row-echelon form 
+         *
+         */
+        Matrix<T>* row_echelon() {
+            for (uint32_t i = 0; i < _cols; i++) { //i col i;
+                //by using tmp col vector, have to scale values in this vector as well
+                Vector<T>* tmp= getCol(i); 
+                T*  dataTmp = tmp->getData();
+                T   lead = 0;
+                std::cout << "Working col: " << *tmp << std::endl;
+                for (uint32_t j = 0; j < tmp->getSize(); j++) { //j = row id
+                    if (dataTmp[j] != 0 && j >= i) {//only set new lead if row index is equal to col index
+                        if (lead == 0 ) { 
+                            lead = dataTmp[j];
+                            std::cout << "new lead found " << lead << " at pos " << j << std::endl;
+                            if (lead != 1) {
+                                (*_matrix[j]).scale(1/lead);
+                                dataTmp[j] = dataTmp[j]/lead;
+                                std::cout << "Scaled lead row " << (*_matrix[j]) << std::endl;
+                            }
+                            //should swap only if row is not in right place => j != i (j > i)
+                            if (j > i) {
+                                this->swap_row(j, i); 
+                                tmp->swap_elements(j, i);
+                                std::cout << "Swapped lead row from pos " << j << " to pos " << i<< std::endl;
+                            }
+                            //could reduce previous rows elements here
+                        }
+                        //set every other non 0 value in ith col to 0 by combi li of leading row (= i)
+                        else {
+                            std::cout << "Row to scale " << (*_matrix[j]) << " by " << dataTmp[j] << " * " << (*_matrix[i]) << std::endl;
+                            Vector<T> scaledLeadingRow = Vector<T>(*_matrix[i]).scale(dataTmp[j]);
+                            std::cout << "ScaledLeading Row "<< scaledLeadingRow << std::endl;
+                            (*_matrix[j]) - scaledLeadingRow; 
+                            dataTmp[j] -= 1 * dataTmp[j]; //juste tjrs egal a 0 eft lulz
+                            std::cout << "Scaled Row " << (*_matrix[j]) << std::endl;
+                        }
+                    }
+                    else {
+                        std::cout << "skip 0 value" << std::endl;
+                    }
+                    std::cout << *this << std::endl;
+                    std::cout << *tmp << std::endl;
+                }
+                delete tmp;
+            }
+            return nullptr;
+        }
+        
+    /***********************DET CALC PRIVATE?*************************/
+        /*
+         * Returns determinant for 1x1 matrix
+         */
+        T determinant_1() const {
+            return (*_matrix[0])[0];
+        }
+
+        /*
+         * Returns determinant for 2x2 of matrix passed in M;
+         * | a b |
+         * | c d | 
+         * = ad - bc
+         */
+        T determinant_2(const Matrix<T> &m) const {
+            Vector<T>** data = m.getData();
+            return ((*data[0])[0]*(*data[1])[1] - (*data[0])[1]*(*data[1])[0]);
+        }
+
+        /*
+         * Returns determinant for 3x3 of matrix passed in M;
+         */
+        T determinant_3(const Matrix<T> &m) const {
+            Vector<T>** data = m.getData();
+            return ((*data[0])[0]*(*data[1])[1] - (*data[0])[1]*(*data[1])[0]);
+        }
+
+    /***********************DET CALC PRIVATE?*************************/
+
+
+        /*
+         * 
+         */
+        T determinant() const {
+            T det;
+            if (!this->isSquare()) {
+                throw std::exception();
+            }
+            switch (this->_rows) {
+                case(1):
+                    det = determinant_1();
+                    break;
+                case(2):
+                    det = determinant_2(*this);
+                    break;
+                default:
+                    throw std::exception();
+            }
+            return det; 
         }
         
 /****************************Operator Overload*********************************/
