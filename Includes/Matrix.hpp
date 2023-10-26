@@ -320,61 +320,42 @@ class Matrix {
          * 6: The resulting matrix is in row-echelon form 
          *
          */
-        Matrix<T>* row_echelon() {
+        void row_echelon_ip() {
+            uint32_t nextLeadPos = 0;
+            uint32_t pivotRowIndex = 0;
             for (uint32_t i = 0; i < _cols; i++) { //i col i;
                 //by using tmp col vector, have to scale values in this vector as well
-                Vector<T>* tmp= getCol(i); 
-                T*  dataTmp = tmp->getData();
                 T   lead = 0;
-                std::cout << "Working col: " << *tmp << std::endl;
-                for (uint32_t j = 0; j < _rows; j++) { //j = row id => tmp->getSize() = _rows
-                    if (dataTmp[j] != 0 && j >= i) {//only set new lead if row index is equal to col index (or less if prev col had no lead)
+                for (uint32_t j = 0; j < _rows; j++) { //j = row id 
+                    //std::cout << (*_matrix[j])[i] << std::endl;
+                    if ((*_matrix[j])[i] != 0 && j >= nextLeadPos) {//only set new lead if row index is below the previous leading value
                         if (lead == 0 ) { 
-                            lead = dataTmp[j];
-                            std::cout << "new lead found " << lead << " at pos " << j << std::endl;
+                            lead = (*_matrix[j])[i];
+                            pivotRowIndex = j;
                             if (lead != 1) {
                                 (*_matrix[j]).scale(1/lead);
-                                dataTmp[j] = dataTmp[j]/lead;
-                                std::cout << "Scaled lead row " << (*_matrix[j]) << std::endl;
                             }
                             //should swap only if row is not in right place => j != i (j > i)
                             if (j > i) {
                                 this->swap_row(j, i); 
-                                tmp->swap_elements(j, i);
-                                std::cout << "Swapped lead row from pos " << j << " to pos " << i<< std::endl;
                             }
                             //Should rescale every row up to i - 1 with new ith leading value (is not possible if there is no leading one in the col)
-                            for (uint32_t k = 0; k < i; k++) {
-                                if (dataTmp[k] != 0) {
-                                    std::cout << "JORDAN" << std::endl;
-                                    std::cout << "Row: |" << (*_matrix[k]) << "| - (" << dataTmp[k] << " * " << (*_matrix[i]) << ")" << std::endl;
-                                    Vector<T> scaledLeadingRow = Vector<T>(*_matrix[i]).scale(dataTmp[k]);
-                                    std::cout << "ScaledLeading Row "<< scaledLeadingRow << std::endl;
+                            for (uint32_t k = 0; k < pivotRowIndex; k++) {
+                                if ((*_matrix[k])[i] != 0) {
+                                    Vector<T> scaledLeadingRow = Vector<T>(*_matrix[pivotRowIndex]).scale((*_matrix[k])[i]);
                                     (*_matrix[k]) - scaledLeadingRow; 
-                                    dataTmp[j] -= 1 * dataTmp[j]; //juste tjrs egal a 0 eft lulz
-                                    std::cout << "New Scaled row " << (*_matrix[k]) << std::endl;
                                 }
                             }
+                            nextLeadPos++;
                         }
-                        //set every other non 0 value in ith col to 0 by combi li of leading row (= i)
+                        //set every other non 0 value in ith col to 0 by combi li of leading row (at nextLeadPos)
                         else {
-                            std::cout << "Row: |" << (*_matrix[j]) << "| - (" << dataTmp[j] << " * " << (*_matrix[i]) << ")"<< std::endl;
-                            Vector<T> scaledLeadingRow = Vector<T>(*_matrix[i]).scale(dataTmp[j]);
-                            std::cout << "ScaledLeading Row "<< scaledLeadingRow << std::endl;
+                            Vector<T> scaledLeadingRow = Vector<T>(*_matrix[pivotRowIndex]).scale((*_matrix[j])[i]);
                             (*_matrix[j]) - scaledLeadingRow; 
-                            dataTmp[j] -= 1 * dataTmp[j]; //juste tjrs egal a 0 eft lulz
-                            std::cout << "Scaled Row " << (*_matrix[j]) << std::endl;
                         }
                     }
-                    else {
-                        std::cout << "skip 0 value" << std::endl;
-                    }
-                    std::cout << *this << std::endl;
-                    std::cout << *tmp << std::endl;
                 }
-                delete tmp;
             }
-            return nullptr;
         }
         
     /***********************DET CALC PRIVATE?*************************/
