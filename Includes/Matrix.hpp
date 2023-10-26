@@ -327,8 +327,8 @@ class Matrix {
                 T*  dataTmp = tmp->getData();
                 T   lead = 0;
                 std::cout << "Working col: " << *tmp << std::endl;
-                for (uint32_t j = 0; j < tmp->getSize(); j++) { //j = row id
-                    if (dataTmp[j] != 0 && j >= i) {//only set new lead if row index is equal to col index
+                for (uint32_t j = 0; j < _rows; j++) { //j = row id => tmp->getSize() = _rows
+                    if (dataTmp[j] != 0 && j >= i) {//only set new lead if row index is equal to col index (or less if prev col had no lead)
                         if (lead == 0 ) { 
                             lead = dataTmp[j];
                             std::cout << "new lead found " << lead << " at pos " << j << std::endl;
@@ -343,11 +343,22 @@ class Matrix {
                                 tmp->swap_elements(j, i);
                                 std::cout << "Swapped lead row from pos " << j << " to pos " << i<< std::endl;
                             }
-                            //could reduce previous rows elements here
+                            //Should rescale every row up to i - 1 with new ith leading value (is not possible if there is no leading one in the col)
+                            for (uint32_t k = 0; k < i; k++) {
+                                if (dataTmp[k] != 0) {
+                                    std::cout << "JORDAN" << std::endl;
+                                    std::cout << "Row: |" << (*_matrix[k]) << "| - (" << dataTmp[k] << " * " << (*_matrix[i]) << ")" << std::endl;
+                                    Vector<T> scaledLeadingRow = Vector<T>(*_matrix[i]).scale(dataTmp[k]);
+                                    std::cout << "ScaledLeading Row "<< scaledLeadingRow << std::endl;
+                                    (*_matrix[k]) - scaledLeadingRow; 
+                                    dataTmp[j] -= 1 * dataTmp[j]; //juste tjrs egal a 0 eft lulz
+                                    std::cout << "New Scaled row " << (*_matrix[k]) << std::endl;
+                                }
+                            }
                         }
                         //set every other non 0 value in ith col to 0 by combi li of leading row (= i)
                         else {
-                            std::cout << "Row to scale " << (*_matrix[j]) << " by " << dataTmp[j] << " * " << (*_matrix[i]) << std::endl;
+                            std::cout << "Row: |" << (*_matrix[j]) << "| - (" << dataTmp[j] << " * " << (*_matrix[i]) << ")"<< std::endl;
                             Vector<T> scaledLeadingRow = Vector<T>(*_matrix[i]).scale(dataTmp[j]);
                             std::cout << "ScaledLeading Row "<< scaledLeadingRow << std::endl;
                             (*_matrix[j]) - scaledLeadingRow; 

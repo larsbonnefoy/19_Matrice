@@ -5,13 +5,34 @@
 
 int main (void)
 {
-    Vector<float> v1 = Vector<float>({1,2,3,4});
-    v1.swap_elements(0, 1);
-    std::cout << v1 << std::endl;
     Matrix<float> m1 = Matrix<float>({{0,2,0,1}, {0,0,-1,3},{2,0,2,0}, {-3,2,0,4}});
     std::cout << m1 << std::endl;
     m1.row_echelon();
     std::cout << m1 << std::endl;
+
+    std::cout << "===========" << std::endl;
+    Matrix<float> m2 = Matrix<float>({{1,0,0}, {0,1,0},{0,0,1}});
+    std::cout << m2 << std::endl;
+    m2.row_echelon();
+    std::cout << m2 << std::endl;
+
+    std::cout << "===========" << std::endl;
+    Matrix<float> m3 = Matrix<float>({{1,2}, {3,4}});
+    std::cout << m3 << std::endl;
+    m3.row_echelon();
+    std::cout << m3 << std::endl;
+
+    std::cout << "===========" << std::endl;
+    Matrix<float> m4 = Matrix<float>({{1,2}, {2,4}});
+    std::cout << m4 << std::endl;
+    m4.row_echelon();
+    std::cout << m4 << std::endl;
+
+    std::cout << "===========" << std::endl;
+    Matrix<float> m5 = Matrix<float>({{8, 5, -2, 4, 28}, {4, 2.5, 20, 4, -4}, {8, 5, 1, 4, 17}});
+    std::cout << m5 << std::endl;
+    m5.row_echelon();
+    std::cout << m5 << std::endl;
 
     /*
     Matrix<float> m1 = Matrix<float>({{1,1}, {0,1}});
