@@ -515,6 +515,23 @@ class Matrix {
     
             return res;
         }
+
+        /*
+         * Gaussian elimination is ok but might be unreliable;
+         * -> QR decomposition migth be better
+         */
+        uint32_t rank() {
+            Matrix<T> *tmp = this->row_echelon();
+            Vector<T> **dataTmp = tmp->getData();
+            uint32_t rank = 0;
+            for(uint32_t i = 0; i < tmp->getRowsNb(); i++) {
+                if (!dataTmp[i]->isNull()) {
+                    rank++;
+                }
+            }
+            delete tmp;
+            return rank;
+        }
         
 /****************************Operator Overload*********************************/
 
@@ -565,17 +582,6 @@ class Matrix {
         }
 };
 
-/*
-template<typename T>
-    Matrix<T>* idMatrix(uint32_t size) {
-        Matrix<T> *resultMatrix = new Matrix<T>(size, size);
-        Vector<T>** matrix = resultMatrix->getData();
-        for(uint32_t i = 0; i < size; i++) {
-            (*matrix[i])[i] = 1;
-        }
-        return resultMatrix;
-}
-*/
 /*
  * Returns new *Matrix 
  * linera interpolation of two matrices

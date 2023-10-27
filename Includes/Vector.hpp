@@ -171,6 +171,15 @@ class Vector {
             return res;
         }
 
+        bool isNull() {
+            for (uint32_t i = 0; i < _size; i++) {
+                if (_data[i] != 0) {
+                    return false;
+                } 
+            }
+            return true;
+        }
+
 /****************************Operator Overload*********************************/
 
         void            toStdOut() const {
