@@ -398,7 +398,7 @@ class Matrix {
         /*
          * Returns new Matrix in row echelon form
          */
-        Matrix<T>* row_echelon() {
+        Matrix<T>* row_echelon() const {
             Matrix<T> *res = new Matrix<T>(*this);
             res->row_echelon_ip();
             return res;
@@ -475,7 +475,7 @@ class Matrix {
          * Returns new Fused matrix this with other horizonatly
          * (m x m).fuse(m x m) = (m x 2m)
          */
-        Matrix<T>* fuse(Matrix<T> &other) {
+        Matrix<T>* fuse(Matrix<T> &other) const {
             Matrix<T>* res = new Matrix<T>(_rows);
             res->_cols = _cols * 2;
             Vector<T>** resData = res->getData();
@@ -494,6 +494,7 @@ class Matrix {
         Matrix<T>* splitRight(uint32_t colId) {
             Matrix<T>* res = new Matrix<T>(_cols - colId);
             Vector<T>** resData = res->getData();
+            res->_cols = colId;
 
             for (uint32_t i = 0; i < colId; i++) {
                 resData[i] = _matrix[i]->splitRight(colId);
