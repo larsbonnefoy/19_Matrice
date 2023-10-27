@@ -16,6 +16,7 @@
  *  Have m different vectors of size n
  */
 
+
 template<typename T>
 class Matrix {
     private:
@@ -23,7 +24,7 @@ class Matrix {
         uint32_t    _cols; //col
         Vector<T>   **_matrix;
 
-    /***********************PRIVATE DET HELPERS*************************/
+    /***********************PRIVATE HELPERS****************************/
         /*
          * Returns determinant for 1x1 matrix
          */
@@ -69,6 +70,7 @@ class Matrix {
             _matrix = new Vector<T>*[_rows];
             for (uint32_t i = 0; i < _rows; i++) {
                 _matrix[i] = new Vector<T>(_cols); 
+                (*_matrix[i])[i] = 1;
             }
         }
 
@@ -467,6 +469,51 @@ class Matrix {
             }
             return det; 
         }
+
+
+        /*
+         * Returns new Fused matrix this with other horizonatly
+         * (m x m).fuse(m x m) = (m x 2m)
+         */
+        Matrix<T>* fuse(Matrix<T> &other) {
+            Matrix<T>* res = new Matrix<T>(_rows);
+            res->_cols = _cols * 2;
+            Vector<T>** resData = res->getData();
+            Vector<T>** otherData = other.getData();
+
+            for (uint32_t i = 0; i < _rows; i++) {
+                resData[i] = _matrix[i]->fuse((*otherData[i]));
+            }
+            return res;
+        }
+
+        /*
+         * Returns new Matrix<T>* 
+         * right part of horizontally splitted starting at colId
+         */
+        Matrix<T>* splitRight(uint32_t colId) {
+            Matrix<T>* res = new Matrix<T>(_cols - colId);
+            Vector<T>** resData = res->getData();
+
+            for (uint32_t i = 0; i < colId; i++) {
+                resData[i] = _matrix[i]->splitRight(colId);
+            }
+            return res;
+        }
+
+
+        /*
+         * Returns new Matrix that is the inverse of this object
+         */
+        Matrix<T>* inverse() {
+            Matrix<T> id = Matrix<T>(_rows, _cols);
+            Matrix<T> *augmentedMatrix = this->fuse(id);
+            augmentedMatrix->row_echelon_ip();
+            Matrix<T> *res = augmentedMatrix->splitRight(_cols);
+            delete augmentedMatrix;
+    
+            return res;
+        }
         
 /****************************Operator Overload*********************************/
 
@@ -518,7 +565,19 @@ class Matrix {
 };
 
 /*
+template<typename T>
+    Matrix<T>* idMatrix(uint32_t size) {
+        Matrix<T> *resultMatrix = new Matrix<T>(size, size);
+        Vector<T>** matrix = resultMatrix->getData();
+        for(uint32_t i = 0; i < size; i++) {
+            (*matrix[i])[i] = 1;
+        }
+        return resultMatrix;
+}
+*/
+/*
  * Returns new *Matrix 
+ * linera interpolation of two matrices
  */
 template<typename T>
 Matrix<T>* lerp(Matrix<T> &m1, Matrix<T> &m2, float t) {

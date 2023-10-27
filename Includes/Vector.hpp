@@ -143,15 +143,34 @@ class Vector {
             _data[j] = tmp;
         }
 
-        //Should create variable list size set to 1; len = _size;
-        // /!\ Doesnt work !!
-        bool is_null() {
-            Vector<T> vec = Vector<T>({1});
-            if (!this->dot(vec)) {
-                return false;
+        /*
+         * Creates new vector by fusing this with other
+         * Works only on same size vectors
+         */
+        Vector<T>* fuse(Vector<T> &other) {
+            Vector<T>* res = new Vector<T>(_size * 2);
+            T* resData = res->getData();
+            T* otherData = other.getData();
+            for (uint32_t i = 0; i < _size; i++) {
+                resData[i] = _data[i];
+                resData[i + _size] = otherData[i];
             }
-            return true;
+            return res;
         }
+
+        /*
+         * Returns new Vector<T>* 
+         * right part of horizontally splitted starting at colId
+         */
+        Vector<T>* splitRight(uint32_t colId) {
+            Vector<T>* res = new Vector<T>(_size - colId);
+            T* resData = res->getData();
+            for (uint32_t i = 0; i < colId; i++) {
+                resData[i] = _data[i + colId];
+            }
+            return res;
+        }
+
 /****************************Operator Overload*********************************/
 
         void            toStdOut() const {
