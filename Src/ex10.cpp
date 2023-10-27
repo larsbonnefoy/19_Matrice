@@ -36,9 +36,14 @@ int main (void)
 
     std::cout << "===========" << std::endl;
     Matrix<float> m6 = Matrix<float>({{3, 2, -4, 3}, {2, 3, 3, 15}, {5, -3, 1, 14}});
+    Matrix<float> *m7 = m6.row_echelon();
     std::cout << m6 << std::endl;
     m6.row_echelon_ip();
     std::cout << m6 << std::endl;
 
+    std::cout << "===========" << std::endl;
+    std::cout << *m7 << std::endl;
+
+    delete m7;
     return 0;
 }

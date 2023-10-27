@@ -327,11 +327,10 @@ class Matrix {
                 //by using tmp col vector, have to scale values in this vector as well
                 T   lead = 0;
                 for (uint32_t j = 0; j < _rows; j++) { //j = row id 
-                    //std::cout << (*_matrix[j])[i] << std::endl;
                     if ((*_matrix[j])[i] != 0 && j >= nextLeadPos) {//only set new lead if row index is below the previous leading value
                         if (lead == 0 ) { 
                             lead = (*_matrix[j])[i];
-                            pivotRowIndex = j;
+                            pivotRowIndex = i > j ? j : i; //pivot row is at minium between j and i
                             if (lead != 1) {
                                 (*_matrix[j]).scale(1/lead);
                             }
@@ -358,6 +357,14 @@ class Matrix {
             }
         }
         
+        /*
+         * Returns new Matrix in row echelon form
+         */
+        Matrix<T>* row_echelon() {
+            Matrix<T> *res = new Matrix<T>(*this);
+            res->row_echelon_ip();
+            return res;
+        }
     /***********************DET CALC PRIVATE?*************************/
         /*
          * Returns determinant for 1x1 matrix
