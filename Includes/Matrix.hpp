@@ -23,6 +23,42 @@ class Matrix {
         uint32_t    _cols; //col
         Vector<T>   **_matrix;
 
+    /***********************PRIVATE DET HELPERS*************************/
+        /*
+         * Returns determinant for 1x1 matrix
+         */
+        T determinant_1() const {
+            return (*_matrix[0])[0];
+        }
+
+        /*
+         * Returns determinant for 2x2 of matrix passed in M;
+         * | a b |
+         * | c d | 
+         * = ad - bc
+         */
+        T determinant_2(const Matrix<T> &m) const {
+            Vector<T>** data = m.getData();
+            return ((*data[0])[0]*(*data[1])[1] - (*data[0])[1]*(*data[1])[0]);
+        }
+
+        /*
+         * Returns determinant for 3x3 of matrix passed in M;
+         * Creates a copy and works in place on it
+         */
+        T determinant_3(const Matrix<T> &m) const {
+            Matrix<T> tmpCpy = Matrix<T>(m);
+            ssize_t factor = tmpCpy.gauss_elemination_ip();
+            T rowMultVal = tmpCpy.mult_diag();
+            return (factor * rowMultVal);
+        }
+
+        T determinant_4(const Matrix<T> &m) const {
+            return (determinant_3(m));
+        }
+
+    /*****************************************************************/
+
     public:
 
 /********************************Constructors**********************************/
@@ -365,38 +401,48 @@ class Matrix {
             res->row_echelon_ip();
             return res;
         }
-    /***********************DET CALC PRIVATE?*************************/
+
         /*
-         * Returns determinant for 1x1 matrix
+         * Does in place gaussian elimination and returns factor by which
+         * determinant should be scaled
+         * There are three types of elementary row operations that do not change the solution set:
+         * Swapping two rows                           -> multiplies det by -1
+         * Multiplying a row by a nonzero number       -> multiplies det by same number
+         * Adding a multiple of one row to another row -> does not change det
          */
-        T determinant_1() const {
-            return (*_matrix[0])[0];
+        ssize_t gauss_elemination_ip() {
+            uint32_t nextLeadPos = 0;
+            uint32_t pivotRowIndex = 0;
+            ssize_t scaleFactor = 1;
+            for (uint32_t i = 0; i < _cols; i++) { //i col i;
+                //by using tmp col vector, have to scale values in this vector as well
+                T   lead = 0;
+                for (uint32_t j = 0; j < _rows; j++) { //j = row id 
+                    if ((*_matrix[j])[i] != 0 && j >= nextLeadPos) {//only set new lead if row index is below the previous leading value
+                        if (lead == 0 ) { 
+                            lead = (*_matrix[j])[i];
+                            pivotRowIndex = i > j ? j : i; //pivot row is at minium between j and i
+                            //should swap only if row is not in right place => j != i (j > i)
+                            if (j > i) {
+                                this->swap_row(j, i); 
+                                scaleFactor *= -1;
+                            }
+                            nextLeadPos++;
+                        }
+                        //set every other non 0 value in ith col to 0 by scaling pivotRow by jthrow[i] / pivotRow[i]
+                        else {
+                            Vector<T> scaledPivotRow = Vector<T>(*_matrix[pivotRowIndex]).scale((*_matrix[j])[i]/(*_matrix[pivotRowIndex])[i]);
+                            (*_matrix[j]) - scaledPivotRow; 
+                        }
+                    }
+                }
+            }
+            return scaleFactor;
         }
 
-        /*
-         * Returns determinant for 2x2 of matrix passed in M;
-         * | a b |
-         * | c d | 
-         * = ad - bc
-         */
-        T determinant_2(const Matrix<T> &m) const {
-            Vector<T>** data = m.getData();
-            return ((*data[0])[0]*(*data[1])[1] - (*data[0])[1]*(*data[1])[0]);
-        }
 
         /*
-         * Returns determinant for 3x3 of matrix passed in M;
-         */
-        T determinant_3(const Matrix<T> &m) const {
-            Vector<T>** data = m.getData();
-            return ((*data[0])[0]*(*data[1])[1] - (*data[0])[1]*(*data[1])[0]);
-        }
-
-    /***********************DET CALC PRIVATE?*************************/
-
-
-        /*
-         * 
+         * Dispatches to right function depending on size
          */
         T determinant() const {
             T det;
@@ -409,6 +455,12 @@ class Matrix {
                     break;
                 case(2):
                     det = determinant_2(*this);
+                    break;
+                case(3):
+                    det = determinant_3(*this);
+                    break;
+                case(4):
+                    det = determinant_4(*this);
                     break;
                 default:
                     throw std::exception();
