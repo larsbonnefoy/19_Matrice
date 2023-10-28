@@ -74,7 +74,10 @@ class Matrix {
             }
         }
 
-        //init only rows of matrix
+        /*
+         * init only rows of matrix
+         * Should manually set nb of col of matrix in when using this constructor
+        */
         Matrix(const uint32_t m) : _rows(m) {
             _matrix = new Vector<T>*[_rows];
         }
@@ -83,12 +86,12 @@ class Matrix {
             _matrix = new Vector<T>*[_rows];
             typename std::initializer_list<Vector<T> >::iterator vecIt;
             uint32_t i = 0;
-            for ( vecIt=vecList.begin(); vecIt!=vecList.end(); ++vecIt) {
+            for (vecIt=vecList.begin(); vecIt!=vecList.end(); ++vecIt) {
                 if (_cols == 0) {
                     _cols = vecIt->getSize();
                 }
                 else if (vecIt->getSize() != _cols) {
-                    throw std::exception();
+                    throw std::exception(); //Avoid creating uneven matrices
                 }
                 _matrix[i] = new Vector<T>(*vecIt);
                 i++;
@@ -125,18 +128,19 @@ class Matrix {
 
         //Returns in matrix by id
         Vector<T>& getRow(uint32_t rowId) const {
-            if (rowId > this->_rows) {
-                throw std::exception();
+            if (rowId > _rows - 1) {
+                throw std::exception();  //Avoid Access to wrong memory
             }
             return *_matrix[rowId];
         }
 
         /*
          * Returns a new Obj Vector representing column of matrix
+         * Uses index, starting at 0
          */
         Vector<T>* getCol(uint32_t colId) const {
-            if (_cols - 1 < colId) {
-                throw std::exception();
+            if (colId > _cols - 1) {
+                throw std::exception();//Avoid Access to wrong memory
             }
             Vector<T> *resVec = new Vector<T>(_rows);
             T* vecData = resVec->getData();
@@ -147,6 +151,10 @@ class Matrix {
             return resVec;
         }
 
+        /*
+         * Returns Addr of rowId
+         * Uses index, starting at 0
+         */
         Vector<T>* getRowAddr(uint32_t rowId) {
             if (rowId > _rows - 1) {
                 throw std::exception();
@@ -161,27 +169,64 @@ class Matrix {
 
 /*********************************Operations***********************************/
 
-        //Row by Row addition of matrix into "this" object
-        Matrix<T>& add(const Matrix<T>& matrix) {
+        /*
+         * Row by Row addition in place from matrix into this object ;
+         */
+        Matrix<T>& add_ip(const Matrix<T>& matrix) {
             for (uint32_t i = 0;  i < this->_rows;  i++) {
-                _matrix[i]->add(matrix.getRow(i));
+                _matrix[i]->add_ip(matrix.getRow(i));
             }
             return (*this);
         }
 
-        //Row by Row substraction of matrix into "this" object
-        Matrix<T>& sub(const Matrix<T>& matrix) {
+        /*
+         * Returns new Matrix object
+         * Row by Row addition in new matrix;
+         */
+        Matrix<T>* add(const Matrix<T>& matrix) {
+            Matrix<T> *res = new Matrix<T>(*this);
+            res->add_ip(matrix);
+            return (res);
+        }
+
+        /*
+         * Row by Row substraction in place from matrix into this object ;
+         */
+        Matrix<T>& sub_ip(const Matrix<T>& matrix) {
             for (uint32_t i = 0;  i < this->_rows;  i++) {
-                _matrix[i]->sub(matrix.getRow(i));
+                _matrix[i]->sub_ip(matrix.getRow(i));
             }
             return (*this);
         }
 
-        Matrix<T>& scale(const T&a) {
+        /*
+         * Returns new Matrix object
+         * Row by Row substraction in new matrix;
+         */
+        Matrix<T>* sub(const Matrix<T>& matrix) {
+            Matrix<T> *res = new Matrix<T>(*this);
+            res->sub_ip(matrix);
+            return (res);
+        }
+
+        /*
+         * Scales Matrix by a in place
+         */
+        Matrix<T>& scale_ip(const T&a) {
             for (uint32_t i = 0;  i < this->_rows;  i++) {
-                _matrix[i]->scale(a);
+                _matrix[i]->scale_ip(a);
             }
             return (*this);
+        }
+
+        /*
+         * Returns new Matrix object
+         * scales by a factor;
+         */
+        Matrix<T>* scale(const T& a) {
+            Matrix<T> *res = new Matrix<T>(*this);
+            res->scale_ip(a);
+            return (res);
         }
         
         /*
@@ -198,6 +243,7 @@ class Matrix {
         }
 
         /*
+         * m x n * n x p => m x p
          * Input: matrices A and B
             Let C be a new matrix of the appropriate size
             For i from 1 to n:
@@ -215,6 +261,7 @@ class Matrix {
             }
 
             Matrix<T> *res = new Matrix<T>(_rows);
+            res->_cols = m.getColNb();
             Vector<T>** resMatrix = res->getData();
 
             Vector<T>** mMatrixData = m.getData();
@@ -239,6 +286,8 @@ class Matrix {
          *   this  *   m     = this._rows * m.getColNb
          *   n^3 complexity
          *   Need to get col of matrix m
+         *   Creates a tranpose of matrix m to compute multiplication
+         *   -> Might be better for cache misses
          */
         Matrix<T>* mul_mat_transpose(const Matrix<T>& m) {
             if (_cols != m._rows) {
@@ -246,6 +295,7 @@ class Matrix {
             }
 
             Matrix<T> *res = new Matrix<T>(_rows);
+            res->_cols = m.getColNb();
             Vector<T>** resMatrix = res->getData();
 
             Matrix<T> *mT = m.transpose();
@@ -370,7 +420,7 @@ class Matrix {
                             lead = (*_matrix[j])[i];
                             pivotRowIndex = i > j ? j : i; //pivot row is at minium between j and i
                             if (lead != 1) {
-                                (*_matrix[j]).scale(1/lead);
+                                (*_matrix[j]).scale_ip(1/lead);
                             }
                             //should swap only if row is not in right place => j != i (j > i)
                             if (j > i) {
@@ -379,7 +429,7 @@ class Matrix {
                             //Should rescale every row up to i - 1 with new ith leading value (is not possible if there is no leading one in the col)
                             for (uint32_t k = 0; k < pivotRowIndex; k++) {
                                 if ((*_matrix[k])[i] != 0) {
-                                    Vector<T> scaledLeadingRow = Vector<T>(*_matrix[pivotRowIndex]).scale((*_matrix[k])[i]);
+                                    Vector<T> scaledLeadingRow = Vector<T>(*_matrix[pivotRowIndex]).scale_ip((*_matrix[k])[i]);
                                     (*_matrix[k]) - scaledLeadingRow; 
                                 }
                             }
@@ -387,7 +437,7 @@ class Matrix {
                         }
                         //set every other non 0 value in ith col to 0 by combi li of leading row (at nextLeadPos)
                         else {
-                            Vector<T> scaledLeadingRow = Vector<T>(*_matrix[pivotRowIndex]).scale((*_matrix[j])[i]);
+                            Vector<T> scaledLeadingRow = Vector<T>(*_matrix[pivotRowIndex]).scale_ip((*_matrix[j])[i]);
                             (*_matrix[j]) - scaledLeadingRow; 
                         }
                     }
@@ -433,7 +483,7 @@ class Matrix {
                         }
                         //set every other non 0 value in ith col to 0 by scaling pivotRow by jthrow[i] / pivotRow[i]
                         else {
-                            Vector<T> scaledPivotRow = Vector<T>(*_matrix[pivotRowIndex]).scale((*_matrix[j])[i]/(*_matrix[pivotRowIndex])[i]);
+                            Vector<T> scaledPivotRow = Vector<T>(*_matrix[pivotRowIndex]).scale_ip((*_matrix[j])[i]/(*_matrix[pivotRowIndex])[i]);
                             (*_matrix[j]) - scaledPivotRow; 
                         }
                     }
@@ -547,21 +597,27 @@ class Matrix {
             }
         }
         
-        //Adds second Matrix into first one 
+        /*
+         * Add second Matrix into first one in place
+         */
         Matrix<T>& operator+(const Matrix<T> &matrix) {
-            this->add(matrix);
+            this->add_ip(matrix);
             return (*this);
         }
 
-        //Subtract second Matrix into first one 
+        /*
+         * Subtract second Matrix into first one in place
+         */
         Matrix<T>& operator-(const Matrix<T> &matrix) {
-            this->sub(matrix);
+            this->sub_ip(matrix);
             return (*this);
         }
 
-        //Scales Matrix by value of T
+        /*
+         *Scales Matrix by value of a in place 
+         */
         Matrix<T>& operator*(const T &a) {
-            this->scale(a);
+            this->scale_ip(a);
             return (*this);
         }
 

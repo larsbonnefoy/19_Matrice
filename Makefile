@@ -2,7 +2,7 @@ NAME = matrix
 OBJS_DIR = Obj
 SRC_DIR = Src
 
-SRC = Vector.cpp
+SRC = 
 
 OBJS = $(addprefix $(OBJS_DIR)/, $(SRC:.cpp=.o))
 
@@ -106,4 +106,4 @@ re: fclean all
 run: all
 	./matrix
 
-.PHONY: all clean fclean re run ex00 ex01 ex02 ex03 ex04 ex05 ex06 ex07 ex08 ex09
+.PHONY: all clean fclean re run ex00 ex01 ex02 ex03 ex04 ex05 ex06 ex07 ex08 ex09 ex10 ex11 ex12 ex13

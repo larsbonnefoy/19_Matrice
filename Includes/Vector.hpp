@@ -73,28 +73,64 @@ class Vector {
         
 /*********************************Operations***********************************/
         
-        //Adds vec._data to this._data
-        Vector<T>& add(const Vector<T> &vec) {
+        /*
+         * Adds vec to this object in place
+         */
+        Vector<T>& add_ip(const Vector<T> &vec) {
             for (uint32_t i = 0; i < this->_size; i++) {
                 _data[i] += vec.getData()[i]; 
             }
             return (*this);
         }
 
-        //Subtract vec._data to this._data
-        Vector<T>& sub(const Vector<T> &vec) {
+        /*
+         * Returns new Vector object
+         * Adds vec to this object
+         */
+        Vector<T>* add(const Vector<T> &vec) const {
+            Vector<T> *res = new Vector<T>(*this);
+            res->add_ip(vec);
+            return (res);
+        }
+
+        /*
+         * Substract vec to this object in place
+         */
+        Vector<T>& sub_ip(const Vector<T> &vec) {
             for (uint32_t i = 0; i < this->_size; i++) {
                 _data[i] -= vec.getData()[i]; 
             }
             return (*this);
         }
 
-        //Scales all the values of a vector by factor a
-        Vector<T>& scale(const T &a) {
+        /* 
+         * Returns new Vector object
+         * Substract vec to this object
+         */
+        Vector<T>* sub(const Vector<T> &vec) const {
+            Vector<T> *res = new Vector<T>(*this);
+            res->sub_ip(vec);
+            return (res);
+        }
+
+        /*
+         * Scales vec by a in place
+         */
+        Vector<T>& scale_ip(const T &a) {
             for (uint32_t i = 0; i < this->_size; i++) {
                 _data[i] *= a; 
             }
             return (*this);
+        }
+
+        /* 
+         * Returns new Vector object
+         * Scales vec by a
+         */
+        Vector<T> scale(const T &a) const {
+            Vector<T> *res = new Vector<T>(*this);
+            res->scale_ip(a);
+            return (res);
         }
         
         T dot(const Vector<T> &vec) {
@@ -193,19 +229,19 @@ class Vector {
 
         //add second vector into first one 
         Vector<T>& operator+(const Vector<T> &vec) {
-            this->add(vec);
+            this->add_ip(vec);
             return (*this);
         }
 
         //Subtract second vector into first one 
         Vector<T>& operator-(const Vector<T> &vec) {
-            this->sub(vec);
+            this->sub_ip(vec);
             return (*this);
         }
 
         //Scales Vector by value of T
         Vector<T>& operator*(const T &a) {
-            this->scale(a);
+            this->scale_ip(a);
             return (*this);
         }
         
@@ -309,6 +345,4 @@ Vector<T>* cross_product(Vector<T>& v1, Vector<T> &v2) {
     return (new Vector<T>({s1, s2, s3}));
 }
 
-//!!Function not usable atm
-Vector<float>& linear_combination_fma(std::initializer_list<Vector<float> > vec, std::initializer_list<float> coefs);
 #endif // !VECTOR_HPP
